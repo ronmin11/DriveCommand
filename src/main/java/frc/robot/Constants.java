@@ -22,9 +22,13 @@ public final class Constants {
     public static final int FRONT_RIGHT_ID = 5;
     public static final int BACK_LEFT_ID = 23;
     public static final int BACK_RIGHT_ID = 6;
-
     public static final int CURRENT_LIMIT = 40;
-
+    public static final double KP = 0.5; 
+    public static final double KI = 0.5;
+    public static final double KD = 0.1;
+    public static final double MAX_VELOCITY = 10;
+    public static final double MAX_ACCELERATION = 5;
+    //Not sure what values to set for PID constants, would have to test this
 
 
   }

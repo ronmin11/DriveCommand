@@ -2,55 +2,58 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrainSubsystem;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Encoder;
+import frc.robot.Constants.DriveConstants;
 
-public class AutonCommand extends Command{
+public class AutonCommand extends Command {
+    private final DriveTrainSubsystem drive;
+    private final ProfiledPIDController pidController;
 
-    private DriveTrainSubsystem drive;
-    private double distance;
-
-    private double counter = 0;
-    private double target = 0;
-    
-    
-
-    public AutonCommand(double distance,DriveTrainSubsystem drive, double seconds) {
-        this.distance = drive.getEncoderMeters() + distance;
+    public AutonCommand(DriveTrainSubsystem drive, double targetDistance) {
         this.drive = drive;
 
-
-        target = (int)(seconds * 50);
+        pidController = new ProfiledPIDController(
+            //PID Constants
+            DriveConstants.KP,
+            DriveConstants.KI,
+            DriveConstants.KD,
+            new TrapezoidProfile.Constraints(DriveConstants.MAX_VELOCITY, DriveConstants.MAX_ACCELERATION));
+        
+            // Set the setpoint to the target distance
+            pidController.setGoal(targetDistance);
+            pidController.reset(drive.getDistance());
+            pidController.setTolerance(5);
+        
         addRequirements(drive);
     }
 
+  
     @Override
     public void initialize() {
-        System.out.println("Autonomous init");
-
     }
 
     @Override
     public void execute() {
-        System.out.println("Autonomous execute");
-        if (counter < target) {
-            counter++;
-            if (counter < target/2) {
-                drive.setMotors(-0.1, 0.1);
-            }
-        }
-        drive.setMotors(0.1,-0.1);
+        double position = drive.getDistance(); //getDistance method in drive subsyst
+
+        double output = pidController.calculate(position);
+
+        drive.arcadeDrive(output, 0);
     }
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println("auton end");
-
-        drive.setMotors(0,0);
+        drive.arcadeDrive(0,0);
     }
 
     @Override
     public boolean isFinished() {
-        return counter >= target;
+        return pidController.atGoal();
     }
+    
+    
 }
 
     

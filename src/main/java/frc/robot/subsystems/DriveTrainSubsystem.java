@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import edu.wpi.first.wpilibj.Encoder;
+
 
 
 
@@ -23,14 +25,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
   public static CANSparkMax frontRight;
   public static CANSparkMax backLeft;
   public static CANSparkMax backRight;
-  private final Encoder leftEncoder = new Encoder(0,1);
-  private final Encoder rightEncoder = new Encoder(2,3);
-  private final double kEncoderTick2Meter = 1.0 / 4096.0 * 0.128 * Math.PI;
   private DifferentialDrive drive;
-  
-  public double getEncoderMeters() {
-    return (leftEncoder.get() + -rightEncoder.get()) / 2 * kEncoderTick2Meter;
-  }
+  Encoder encoder = new Encoder(0, 0); //Issue with encoder initialization
+
 
   public DriveTrainSubsystem() {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -58,8 +55,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     if (follow != null) {
       motor.follow(follow);
     }
-    leftEncoder.setReverseDirection(false);
-    rightEncoder.setReverseDirection(true);
+   
     motor.setIdleMode(IdleMode.kBrake);
     motor.setSmartCurrentLimit(DriveConstants.CURRENT_LIMIT);
     motor.burnFlash();
@@ -69,16 +65,20 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 
   public void periodic(){
-    SmartDashboard.putNumber("Drive encoder value", getEncoderMeters());
+    
   }
 
     public void setMotors(double leftSpeed, double rightSpeed) {
-      System.out.println("Autonomous init");
+      
       frontLeft.set(leftSpeed);
       backLeft.set(leftSpeed);
       frontRight.set(-rightSpeed);
       backRight.set(-rightSpeed);
 
     }
+    
+    public double getDistance() {
+      return encoder.getDistance();
+    } 
 
 }

@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
       System.out.println("robot init");
 
     m_robotContainer = new RobotContainer();
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     
 
   }
